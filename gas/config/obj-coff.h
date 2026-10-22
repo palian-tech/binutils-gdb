@@ -89,7 +89,9 @@
 
 #include "coff/sh.h"
 
-#ifdef TE_PE
+#if defined (TE_WINCE)
+#define TARGET_FORMAT "pe-sh4-wince-little"
+#elif defined (TE_PE)
 #define TARGET_FORMAT "pe-shl"
 #else
 

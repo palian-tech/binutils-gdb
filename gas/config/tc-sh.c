@@ -3619,6 +3619,9 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
 
     case BFD_RELOC_32:
     case BFD_RELOC_32_PCREL:
+#ifdef TE_PE
+    case BFD_RELOC_RVA:	/* .rva, emitted by dlltool for the import tables.  */
+#endif
       apply_full_field_fix (fixP, buf, val, 4);
       break;
 

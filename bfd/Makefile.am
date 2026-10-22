@@ -375,6 +375,7 @@ BFD32_BACKENDS = \
 	pe-mcore.lo \
 	pe-ppc.lo \
 	pe-sh.lo \
+	pe-sh4-wince.lo \
 	pef.lo \
 	pei-arm-wince.lo \
 	pei-arm.lo \
@@ -382,6 +383,7 @@ BFD32_BACKENDS = \
 	pei-mcore.lo \
 	pei-ppc.lo \
 	pei-sh.lo \
+	pei-sh4-wince.lo \
 	peigen.lo \
 	plugin.lo \
 	ppcboot.lo \
@@ -511,6 +513,7 @@ BFD32_BACKENDS_CFILES = \
 	pe-mcore.c \
 	pe-ppc.c \
 	pe-sh.c \
+	pe-sh4-wince.c \
 	pef.c \
 	pei-arm-wince.c \
 	pei-arm.c \
@@ -518,6 +521,7 @@ BFD32_BACKENDS_CFILES = \
 	pei-mcore.c \
 	pei-ppc.c \
 	pei-sh.c \
+	pei-sh4-wince.c \
 	plugin.c \
 	ppcboot.c \
 	reloc16.c \

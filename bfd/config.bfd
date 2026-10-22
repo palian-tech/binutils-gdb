@@ -1221,6 +1221,11 @@ case "${targ}" in
     ;;
 #endif /* BFD64 */
 
+  sh4*-*-mingw32ce* | sh4*-*-wince*)
+    targ_defvec=sh4_pe_wince_le_vec
+    targ_selvecs="sh4_pe_wince_le_vec sh4_pei_wince_le_vec sh_pe_le_vec sh_pei_le_vec"
+    targ_underscore=yes
+    ;;
   sh*eb-*-linux*)
     targ_defvec=sh_elf32_linux_be_vec
     targ_selvecs=sh_elf32_linux_vec

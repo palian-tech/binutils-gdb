@@ -830,6 +830,10 @@ sh-*-vxworks)		targ_emul=shelf_vxworks
 sh-*-nto*)		targ_emul=shelf_nto
 			targ_extra_emuls=shlelf_nto
 			;;
+sh4*-*-mingw32ce* | sh4*-*-wince*)
+			targ_emul=sh4_wince_pe
+			targ_extra_ofiles="deffilep.o pe-dll.o"
+			;;
 sh-*-pe)		targ_emul=shpe ;
 			targ_extra_ofiles="deffilep.o pe-dll.o"
 			;;

@@ -871,6 +871,8 @@ extern const bfd_target sh_elf32_vxworks_vec;
 extern const bfd_target sh_elf32_vxworks_le_vec;
 extern const bfd_target sh_pe_le_vec;
 extern const bfd_target sh_pei_le_vec;
+extern const bfd_target sh4_pe_wince_le_vec;
+extern const bfd_target sh4_pei_wince_le_vec;
 extern const bfd_target sparc_elf32_vec;
 extern const bfd_target sparc_elf32_sol2_vec;
 extern const bfd_target sparc_elf32_vxworks_vec;
@@ -1282,6 +1284,8 @@ static const bfd_target * const _bfd_target_vector[] =
 	&sh_elf32_vxworks_le_vec,
 	&sh_pe_le_vec,
 	&sh_pei_le_vec,
+	&sh4_pe_wince_le_vec,
+	&sh4_pei_wince_le_vec,
 
 	&sparc_elf32_vec,
 	&sparc_elf32_sol2_vec,
