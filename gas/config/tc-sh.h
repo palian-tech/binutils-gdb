@@ -135,6 +135,12 @@ extern void sh_frob_file (void);
 
 #define tc_coff_symbol_emit_hook(a) ; /* Not used.  */
 
+#ifdef TE_PE
+/* Allow 1: / 1f / 1b local labels, as in ELF configurations (te-generic.h);
+   libgcc's SH assembly uses them.  */
+#define LOCAL_LABELS_FB 1
+#endif
+
 #define TC_KEEP_FX_OFFSET 1
 
 #define SEG_NAME(SEG) segment_name (SEG)
