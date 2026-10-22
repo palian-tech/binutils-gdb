@@ -145,6 +145,12 @@ extern void sh_frob_file (void);
 
 #define SEG_NAME(SEG) segment_name (SEG)
 
+#ifdef TE_PE
+/* No padding at the end of sections.  PE grouped sections (.idata$2 and
+   the like) are concatenated by the linker, and dlltool's 20-byte import
+   descriptors must stay 20 bytes; i386 PE does the same.  */
+#define SUB_SEGMENT_ALIGN(SEG, FRCHAIN) 0
+#else
 /* We align most sections to a 16 byte boundary.  */
 #define SUB_SEGMENT_ALIGN(SEG, FRCHAIN)			\
   (strncmp (SEG_NAME (SEG), ".stabstr", 8) == 0		\
@@ -154,6 +160,7 @@ extern void sh_frob_file (void);
        || strcmp (SEG_NAME (SEG), ".dtors") == 0)	\
       ? 2						\
       : (sh_small ? 2 : 4)))
+#endif
 
 #endif /* OBJ_COFF */
 
