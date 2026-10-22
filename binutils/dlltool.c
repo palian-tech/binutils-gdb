@@ -466,6 +466,10 @@ static const char *mname = "i386:x86-64";
 static const char *mname = "sh";
 #endif
 
+#ifdef DLLTOOL_DEFAULT_SH4_WINCE
+static const char *mname = "sh4-wince";
+#endif
+
 #ifdef DLLTOOL_DEFAULT_MIPS
 static const char *mname = "mips";
 #endif
@@ -552,6 +556,18 @@ static const unsigned char thumb_jtab[] =
   0x40, 0xbc,           /* pop  {r6}         */
   0x60, 0x47,           /* bx   ip           */
   0,    0,    0,    0
+};
+
+/* SH: load the address from the import address table and jump to it.
+   This is the same sequence as jmp_sh_bytes in ld/pe-dll.c; r0 is
+   call-clobbered and carries no argument.  */
+static const unsigned char sh_jtab[] =
+{
+  0x01, 0xd0,			/* mov.l  1f,r0   */
+  0x02, 0x60,			/* mov.l  @r0,r0  */
+  0x2b, 0x40,			/* jmp    @r0     */
+  0x09, 0x00,			/* nop            */
+  0,    0,    0,    0		/* 1: .long __imp_x */
 };
 
 static const unsigned char mcore_be_jtab[] =
@@ -772,6 +788,16 @@ mtable[] =
     0, 0, 0, 0, 0, false, 0
   }
   ,
+  {
+#define MSH4_WINCE 11
+    "sh4-wince", ".byte", ".short", ".long", ".asciz", "!",
+    "mov.l\t1f,r0\n\tmov.l\t@r0,r0\n\tjmp\t@r0\n\tnop\n\t.align\t2\n1:\t.long",
+    ".global", ".space", ".align\t1", ".align\t2", "-little",
+    "pe-sh4-wince-little", bfd_arch_sh,
+    sh_jtab, sizeof (sh_jtab), 8,
+    0, 0, 0, 0, 0, false, 0
+  }
+  ,
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
@@ -920,6 +946,7 @@ rvaafter (int mach)
     case MMCORE_ELF:
     case MMCORE_ELF_LE:
     case MARM_WINCE:
+    case MSH4_WINCE:
     case MAARCH64:
       break;
     default:
@@ -945,6 +972,7 @@ rvabefore (int mach)
     case MMCORE_ELF:
     case MMCORE_ELF_LE:
     case MARM_WINCE:
+    case MSH4_WINCE:
     case MAARCH64:
       return ".rva\t";
     default:
@@ -972,6 +1000,7 @@ asm_prefix (int mach, const char *name)
       break;
     case M386:
     case MX86:
+    case MSH4_WINCE:
       /* Symbol names starting with ? do not have a leading underscore. */
       if ((name && *name == '?') || leading_underscore == 0)
         break;

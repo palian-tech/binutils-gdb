@@ -366,8 +366,13 @@ static reloc_howto_type sh_coff_howtos[] =
 
 #define SH_COFF_HOWTO_COUNT (sizeof sh_coff_howtos / sizeof sh_coff_howtos[0])
 
-/* Check for a bad magic number.  */
+/* Check for a bad magic number.  The Windows CE SH-4 vectors only accept
+   (and write) IMAGE_FILE_MACHINE_SH4.  */
+#ifdef COFF_SH4_WINCE
+#define BADMAG(x) ((x).f_magic != SH_ARCH_MAGIC_SH4_WINCE)
+#else
 #define BADMAG(x) SHBADMAG(x)
+#endif
 
 /* Customize coffcode.h (this is not currently used).  */
 #define SH 1

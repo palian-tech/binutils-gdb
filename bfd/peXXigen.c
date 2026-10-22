@@ -2872,7 +2872,7 @@ _bfd_XX_print_private_bfd_data_common (bfd * abfd, void * vfile)
       subsystem_name = "POSIX CUI";
       break;
     case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
-      subsystem_name = "Wince CUI";
+      subsystem_name = "Wince GUI";
       break;
     /* These are from UEFI Platform Initialization Specification 1.1.  */
     case IMAGE_SUBSYSTEM_EFI_APPLICATION:

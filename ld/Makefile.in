@@ -870,6 +870,7 @@ ALL_EMULATION_SOURCES = \
 	eshlelf_nbsd.c \
 	eshlelf_nto.c \
 	eshlelf_vxworks.c \
+	esh4_wince_pe.c \
 	eshpe.c \
 	etic30coff.c \
 	etic3xcoff.c \
@@ -1569,6 +1570,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eshlelf_nbsd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eshlelf_nto.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eshlelf_vxworks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/esh4_wince_pe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eshpe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/etic30coff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/etic3xcoff.Po@am__quote@

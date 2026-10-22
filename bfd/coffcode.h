@@ -2359,6 +2359,12 @@ coff_set_arch_mach_hook (bfd *abfd, void * filehdr)
 #endif
       arch = bfd_arch_sh;
       break;
+#if defined (COFF_WITH_PE) && defined (SH_ARCH_MAGIC_SH4_WINCE)
+    case SH_ARCH_MAGIC_SH4_WINCE:
+      arch = bfd_arch_sh;
+      machine = bfd_mach_sh4;
+      break;
+#endif
 #endif
 
 #ifdef MIPS_ARCH_MAGIC_WINCE
@@ -2880,7 +2886,9 @@ coff_set_flags (bfd * abfd,
 
 #ifdef SH_ARCH_MAGIC_BIG
     case bfd_arch_sh:
-#ifdef COFF_IMAGE_WITH_PE
+#if defined (COFF_SH4_WINCE)
+      *magicp = SH_ARCH_MAGIC_SH4_WINCE;
+#elif defined (COFF_IMAGE_WITH_PE)
       *magicp = SH_ARCH_MAGIC_WINCE;
 #else
       if (bfd_big_endian (abfd))

@@ -384,6 +384,7 @@ case ${generic_target} in
 
   score-*-elf)				fmt=elf ;;
 
+  sh-*-mingw32ce* | sh-*-wince*)		fmt=coff em=wince-pe bfd_gas=yes endian=little ;;
   sh*-*-linux*)				fmt=elf em=linux
     case ${cpu} in
       sh*eb)	endian=big ;;

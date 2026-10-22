@@ -359,6 +359,7 @@ ALL_EMULATION_SOURCES = \
 	eshlelf_nbsd.c \
 	eshlelf_nto.c \
 	eshlelf_vxworks.c \
+	esh4_wince_pe.c \
 	eshpe.c \
 	etic30coff.c \
 	etic3xcoff.c \

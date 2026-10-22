@@ -303,6 +303,15 @@ static pe_details_type pe_detail_list[] =
     autofilter_symbollist_generic
   },
   {
+    "pei-sh4-wince-little",
+    "pe-sh4-wince-little",
+    16 /* R_SH_IMAGEBASE */,
+    PE_ARCH_sh,
+    bfd_arch_sh,
+    TRUE,
+    autofilter_symbollist_generic
+  },
+  {
     "pei-mips",
     "pe-mips",
     34 /* MIPS_R_RVA */,

@@ -115,12 +115,14 @@ fragment <<EOF
 
 #if defined(TARGET_IS_i386pe) \
     || defined(TARGET_IS_shpe) \
+    || defined(TARGET_IS_sh4_wince_pe) \
     || defined(TARGET_IS_armpe) \
     || defined(TARGET_IS_arm_wince_pe)
 #define DLL_SUPPORT
 #endif
 
-#if defined(TARGET_IS_i386pe) || defined(TARGET_IS_arm_wince_pe)
+#if defined(TARGET_IS_i386pe) || defined(TARGET_IS_arm_wince_pe) \
+    || defined(TARGET_IS_sh4_wince_pe)
 #define DEFAULT_PSEUDO_RELOC_VERSION 2
 #else
 #define DEFAULT_PSEUDO_RELOC_VERSION 1
@@ -141,7 +143,7 @@ fragment <<EOF
 #if defined(TARGET_IS_armpe)
 #define PE_DEF_SECTION_ALIGNMENT	0x00001000
 #define	PE_DEF_SUBSYSTEM		IMAGE_SUBSYSTEM_WINDOWS_GUI
-#elif defined(TARGET_IS_arm_wince_pe)
+#elif defined(TARGET_IS_arm_wince_pe) || defined(TARGET_IS_sh4_wince_pe)
 #define PE_DEF_SECTION_ALIGNMENT	0x00001000
 #define	PE_DEF_SUBSYSTEM		IMAGE_SUBSYSTEM_WINDOWS_CE_GUI
 #else
@@ -379,6 +381,9 @@ static definfo init[] =
   D(MinorImageVersion,"__minor_image_version__", 0, false),
 #if defined(TARGET_IS_armpe)  || defined(TARGET_IS_arm_wince_pe)
   D(MajorSubsystemVersion,"__major_subsystem_version__", 3, false),
+#elif defined(TARGET_IS_sh4_wince_pe)
+  /* Windows CE 5.00, as written by the eVC4 linker for SH-4.  */
+  D(MajorSubsystemVersion,"__major_subsystem_version__", 5, false),
 #else
   D(MajorSubsystemVersion,"__major_subsystem_version__", 4, false),
 #endif
@@ -1584,7 +1589,8 @@ gld${EMULATION_NAME}_after_open (void)
 
 #if defined (TARGET_IS_i386pe) \
     || defined (TARGET_IS_armpe) \
-    || defined (TARGET_IS_arm_wince_pe)
+    || defined (TARGET_IS_arm_wince_pe) \
+    || defined (TARGET_IS_sh4_wince_pe)
   if (!bfd_link_relocatable (&link_info))
     pe_dll_build_sections (link_info.output_bfd, &link_info);
 #else
@@ -2002,6 +2008,9 @@ gld${EMULATION_NAME}_recognized_file (lang_input_statement_type *entry ATTRIBUTE
 #endif
 #ifdef TARGET_IS_shpe
   pe_dll_id_target ("pei-shl");
+#endif
+#ifdef TARGET_IS_sh4_wince_pe
+  pe_dll_id_target ("pei-sh4-wince-little");
 #endif
 #ifdef TARGET_IS_armpe
   pe_dll_id_target ("pei-arm-little");
