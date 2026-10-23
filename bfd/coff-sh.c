@@ -2844,6 +2844,32 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 		     + sec->output_section->vma
 		     + sec->output_offset);
 	    }
+	  else if (h->root.type == bfd_link_hash_undefweak)
+	    {
+	      /* As in cofflink.c and coff-arm.c: a weak external with an
+		 aux record resolves to its default symbol, or to 0 if that
+		 is undefined (PE/COFF specification, section 5.5.3).  */
+	      if (h->symbol_class == C_NT_WEAK && h->numaux == 1)
+		{
+		  struct coff_link_hash_entry *h2 =
+		    h->auxbfd->tdata.coff_obj_data->sym_hashes[
+		    h->aux->x_sym.x_tagndx.u32];
+
+		  if (!h2 || h2->root.type == bfd_link_hash_undefined)
+		    val = 0;
+		  else
+		    {
+		      asection *sec = h2->root.u.def.section;
+
+		      val = (h2->root.u.def.value
+			     + sec->output_section->vma
+			     + sec->output_offset);
+		    }
+		}
+	      else
+		/* This is a GNU extension.  */
+		val = 0;
+	    }
 	  else if (! bfd_link_relocatable (info))
 	    (*info->callbacks->undefined_symbol)
 	      (info, h->root.root.string, input_bfd, input_section,
@@ -3026,7 +3052,13 @@ CREATE_BIG_COFF_TARGET_VEC (sh_coff_vec, "coff-sh", BFD_IS_RELAXABLE, 0, '_', NU
 #define TARGET_SHL_NAME "coff-shl"
 #endif
 
-#ifdef COFF_WITH_PE
+#if defined (COFF_WITH_PE) && defined (COFF_SH4_WINCE)
+/* COMDAT (.linkonce) sections, as on arm-wince-pe.  */
+CREATE_LITTLE_COFF_TARGET_VEC (TARGET_SYM, TARGET_SHL_NAME, BFD_IS_RELAXABLE,
+			       SEC_CODE | SEC_DATA | SEC_LINK_ONCE
+			       | SEC_LINK_DUPLICATES, '_', NULL,
+			       COFF_SWAP_TABLE);
+#elif defined (COFF_WITH_PE)
 CREATE_LITTLE_COFF_TARGET_VEC (TARGET_SYM, TARGET_SHL_NAME, BFD_IS_RELAXABLE,
 			       SEC_CODE | SEC_DATA, '_', NULL, COFF_SWAP_TABLE);
 #else
