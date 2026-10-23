@@ -26,7 +26,7 @@
 #define TARGET_SHL_NAME "pe-sh4-wince-little"
 #define COFF_SH4_WINCE
 #define COFF_WITH_PE
-#define PCRELOFFSET TRUE
+#define PCRELOFFSET true
 #define TARGET_UNDERSCORE '_'
 #define COFF_LONG_SECTION_NAMES
 

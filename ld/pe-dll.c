@@ -308,7 +308,7 @@ static pe_details_type pe_detail_list[] =
     16 /* R_SH_IMAGEBASE */,
     PE_ARCH_sh,
     bfd_arch_sh,
-    TRUE,
+    true,
     autofilter_symbollist_generic
   },
   {
