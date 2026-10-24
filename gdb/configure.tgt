@@ -578,6 +578,10 @@ sh*-*-netbsd* | sh*-*-knetbsd*-gnu)
 	# Target: NetBSD/sh
 	gdb_target_obs="sh-tdep.o sh-netbsd-tdep.o"
 	;;
+sh*-*-mingw32ce*)
+	# Target: SuperH based machine running Windows CE (win32)
+	gdb_target_obs="sh-tdep.o sh-wince-tdep.o windows-tdep.o"
+	;;
 sh*-*-openbsd*)
 	# Target: OpenBSD/sh
 	gdb_target_obs="sh-tdep.o sh-netbsd-tdep.o"
