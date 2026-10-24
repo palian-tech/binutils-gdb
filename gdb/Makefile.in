@@ -882,6 +882,7 @@ ALL_TARGET_OBS = \
 	sh-linux-tdep.o \
 	sh-netbsd-tdep.o \
 	sh-tdep.o \
+	sh-wince-tdep.o \
 	sol2-tdep.o \
 	solib-aix.o \
 	solib-darwin.o \
@@ -1849,6 +1850,7 @@ ALLDEPFILES = \
 	sh-netbsd-nat.c \
 	sh-netbsd-tdep.c \
 	sh-tdep.c \
+	sh-wince-tdep.c \
 	sol2-tdep.c \
 	solib-aix.c \
 	solib-rocm.c \
