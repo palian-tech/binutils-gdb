@@ -80,6 +80,10 @@ little (int ignore ATTRIBUTE_UNUSED)
    function to call to execute this pseudo-op
    Integer arg to pass to the function.  */
 
+#if defined (OBJ_COFF) && defined (TE_PE)
+static void sh_pe_directive_secrel (int);
+#endif
+
 const pseudo_typeS md_pseudo_table[] =
 {
 #ifdef OBJ_ELF
@@ -105,6 +109,9 @@ const pseudo_typeS md_pseudo_table[] =
   {"2byte", s_uacons, 2},
   {"4byte", s_uacons, 4},
   {"8byte", s_uacons, 8},
+#if defined (OBJ_COFF) && defined (TE_PE)
+  {"secrel32", sh_pe_directive_secrel, 0},
+#endif
   {0, 0, 0}
 };
 
@@ -549,6 +556,68 @@ sh_optimize_expr (expressionS *l, operatorT op, expressionS *r)
   return 0;
 }
 #endif /* OBJ_ELF */
+
+#if defined (OBJ_COFF) && defined (TE_PE)
+/* .secrel32 SYM[+OFF], ...  */
+
+static void
+sh_pe_directive_secrel (int dummy ATTRIBUTE_UNUSED)
+{
+  expressionS exp;
+
+  do
+    {
+      expression (&exp);
+      if (exp.X_op == O_symbol)
+	exp.X_op = O_secrel;
+      else
+	as_bad (_(".secrel32 needs a symbol"));
+      emit_expr (&exp, 4);
+    }
+  while (*input_line_pointer++ == ',');
+
+  input_line_pointer--;
+  demand_empty_rest_of_line ();
+}
+
+void
+sh_pe_cons_fix_new (fragS *frag, int off, int size, expressionS *exp,
+		    bfd_reloc_code_real_type r_type)
+{
+  if (exp->X_op == O_secrel)
+    {
+      if (size != 4)
+	as_bad (_("unsupported BFD relocation size %u"), size);
+      exp->X_op = O_symbol;
+      r_type = BFD_RELOC_32_SECREL;
+    }
+  else if (r_type == TC_PARSE_CONS_RETURN_NONE)
+    switch (size)
+      {
+      case 1: r_type = BFD_RELOC_8; break;
+      case 2: r_type = BFD_RELOC_16; break;
+      case 4: r_type = BFD_RELOC_32; break;
+      case 8: r_type = BFD_RELOC_64; break;
+      default:
+	as_bad (_("unsupported BFD relocation size %u"), size);
+	r_type = BFD_RELOC_32;
+      }
+  fix_new_exp (frag, off, size, exp, 0, r_type);
+}
+
+/* DWARF offsets of the debug sections that gas writes itself.  */
+
+void
+sh_pe_dwarf2_emit_offset (symbolS *symbol, unsigned int size)
+{
+  expressionS exp;
+
+  exp.X_op = O_secrel;
+  exp.X_add_symbol = symbol;
+  exp.X_add_number = 0;
+  emit_expr (&exp, size);
+}
+#endif /* OBJ_COFF && TE_PE */
 
 /* This function is called once, at assembler startup time.  This should
    set up all the tables, etc that the MD part of the assembler needs.  */
@@ -3607,6 +3676,7 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
     case BFD_RELOC_32_PCREL:
 #ifdef TE_PE
     case BFD_RELOC_RVA:	/* .rva, emitted by dlltool for the import tables.  */
+    case BFD_RELOC_32_SECREL: /* The linker subtracts the section start.  */
 #endif
       apply_full_field_fix (fixP, buf, val, 4);
       break;

@@ -159,6 +159,20 @@ extern void sh_frob_file (void);
       : (sh_small ? 2 : 4)))
 #endif
 
+#ifdef TE_PE
+/* .secrel32: a 32-bit offset from the start of the symbol's output
+   section, for DWARF references between debug sections.  */
+#define O_secrel O_md1
+
+#define TC_CONS_FIX_NEW(FRAG, OFF, LEN, EXP, RELOC)	\
+  sh_pe_cons_fix_new ((FRAG), (OFF), (LEN), (EXP), (RELOC))
+void sh_pe_cons_fix_new (fragS *, int, int, expressionS *,
+			 bfd_reloc_code_real_type);
+
+#define TC_DWARF2_EMIT_OFFSET  sh_pe_dwarf2_emit_offset
+void sh_pe_dwarf2_emit_offset (symbolS *, unsigned int);
+#endif
+
 #endif /* OBJ_COFF */
 
 #ifdef OBJ_ELF
