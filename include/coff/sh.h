@@ -108,6 +108,10 @@ struct external_reloc
 #define R_SH_SWITCH16	25		/* 16 bit switch table entry */
 #define R_SH_SWITCH32	26		/* 32 bit switch table entry */
 
+/* Windows CE: offset from the start of the symbol's output section
+   (.secrel32), for DWARF references between debug sections.  */
+#define R_SH_SECREL	34
+
 /* The USES reloc type is used for relaxing.  The compiler will
    generate .uses pseudo-ops when it finds a function call which it
    can relax.  The r_offset field of the USES reloc holds the PC

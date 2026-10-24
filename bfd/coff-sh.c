@@ -58,6 +58,15 @@ static bool sh_align_load_span
 #ifdef COFF_WITH_PE
 /* Can't build import tables with 2**4 alignment.  */
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER	2
+/* DWARF sections are concatenated by the linker and read as one stream,
+   so their input sections must not be padded (as in pe-arm.c).  */
+#define COFF_SECTION_ALIGNMENT_ENTRIES \
+{ COFF_SECTION_NAME_PARTIAL_MATCH (".debug"), \
+  COFF_ALIGNMENT_FIELD_EMPTY, COFF_ALIGNMENT_FIELD_EMPTY, 0 }, \
+{ COFF_SECTION_NAME_PARTIAL_MATCH (".zdebug"), \
+  COFF_ALIGNMENT_FIELD_EMPTY, COFF_ALIGNMENT_FIELD_EMPTY, 0 }, \
+{ COFF_SECTION_NAME_PARTIAL_MATCH (".gnu.linkonce.wi."), \
+  COFF_ALIGNMENT_FIELD_EMPTY, COFF_ALIGNMENT_FIELD_EMPTY, 0 }
 #else
 /* Default section alignment to 2**4.  */
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER	4
@@ -361,7 +370,27 @@ static reloc_howto_type sh_coff_howtos[] =
 	 true,			/* partial_inplace */
 	 0xff,			/* src_mask */
 	 0xff,			/* dst_mask */
+	 false),		/* pcrel_offset */
+
+#ifdef COFF_WITH_PE
+  /* Windows CE: .secrel32.  sh_relocate_section subtracts the start of
+     the output section.  */
+  HOWTO (R_SH_SECREL,		/* type */
+	 0,			/* rightshift */
+	 4,			/* size */
+	 32,			/* bitsize */
+	 false,			/* pc_relative */
+	 0,			/* bitpos */
+	 complain_overflow_dont, /* complain_on_overflow */
+	 NULL,			/* special_function */
+	 "r_secrel",		/* name */
+	 true,			/* partial_inplace */
+	 0xffffffff,		/* src_mask */
+	 0xffffffff,		/* dst_mask */
 	 false)			/* pcrel_offset */
+#else
+  EMPTY_HOWTO (R_SH_SECREL)
+#endif
 };
 
 #define SH_COFF_HOWTO_COUNT (sizeof sh_coff_howtos / sizeof sh_coff_howtos[0])
@@ -481,6 +510,7 @@ static const struct shcoff_reloc_map sh_reloc_map[] =
   { BFD_RELOC_32, R_SH_IMM32CE },
   { BFD_RELOC_RVA, R_SH_IMAGEBASE },
   { BFD_RELOC_CTOR, R_SH_IMM32CE },
+  { BFD_RELOC_32_SECREL, R_SH_SECREL },
 };
 #else
 /* An array mapping BFD reloc codes to SH PE relocs.  */
@@ -2750,6 +2780,7 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
       bfd_vma val;
       reloc_howto_type *howto;
       bfd_reloc_status_type rstat;
+      asection *osec = NULL;
 
       /* Almost all relocs have to do with relaxing.  If any work must
 	 be done for them, it has been done in sh_relax_section.  */
@@ -2757,6 +2788,7 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 #ifdef COFF_WITH_PE
 	  && rel->r_type != R_SH_IMM32CE
 	  && rel->r_type != R_SH_IMAGEBASE
+	  && rel->r_type != R_SH_SECREL
 #endif
 	  && rel->r_type != R_SH_PCDISP)
 	continue;
@@ -2826,6 +2858,7 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	  else
 	    {
 	      sec = sections[symndx];
+	      osec = sec->output_section;
 	      val = (sec->output_section->vma
 		     + sec->output_offset
 		     + sym->n_value
@@ -2840,6 +2873,7 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	      asection *sec;
 
 	      sec = h->root.u.def.section;
+	      osec = sec->output_section;
 	      val = (h->root.u.def.value
 		     + sec->output_section->vma
 		     + sec->output_offset);
@@ -2875,6 +2909,13 @@ sh_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	      (info, h->root.root.string, input_bfd, input_section,
 	       rel->r_vaddr - input_section->vma, true);
 	}
+
+#ifdef COFF_WITH_PE
+      /* .secrel32: the offset from the start of the output section.  */
+      if (rel->r_type == R_SH_SECREL && osec != NULL
+	  && ! bfd_link_relocatable (info))
+	val -= osec->vma;
+#endif
 
       rstat = _bfd_final_link_relocate (howto, input_bfd, input_section,
 					contents,
