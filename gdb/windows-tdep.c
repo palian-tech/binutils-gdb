@@ -889,11 +889,28 @@ windows_solib_create_inferior_hook (int from_tty)
       peb_offset = 96;
       base_offset = 16;
     }
+  /* Windows CE has no process environment block and loads executables
+     at their image base.  */
+  if (gdbarch_osabi (gdbarch) == GDB_OSABI_WINCE)
+    return;
+
   CORE_ADDR tlb;
   gdb_byte buf[8];
-  if (target_has_execution ()
-      && target_get_tib_address (inferior_ptid, &tlb)
-      && !target_read_memory (tlb + peb_offset, buf, ptr_bytes))
+  bool have_tlb = false;
+  if (target_has_execution ())
+    {
+      /* A remote stub without qGetTIBAddr (QEMU's, for example) is not
+	 an error here: the executable is then not rebased.  */
+      try
+	{
+	  have_tlb = target_get_tib_address (inferior_ptid, &tlb);
+	}
+      catch (const gdb_exception_error &ex)
+	{
+	  have_tlb = false;
+	}
+    }
+  if (have_tlb && !target_read_memory (tlb + peb_offset, buf, ptr_bytes))
     {
       CORE_ADDR peb = extract_unsigned_integer (buf, ptr_bytes, byte_order);
       if (!target_read_memory (peb + base_offset, buf, ptr_bytes))
